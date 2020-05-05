@@ -1,0 +1,9 @@
+org/
+median/
+closing/
+opening/
+LoG/
+sharpening_4N/
+sharpening_8N/
+sobel_xy/
+convergence/
