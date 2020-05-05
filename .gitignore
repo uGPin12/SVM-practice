@@ -2,6 +2,7 @@
 *.npz
 *.mhd
 *.raw
+*.zraw
 !.gitkeep
 
 
@@ -228,8 +229,3 @@ ipch/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
-
-*.ini
-
-# Data directory
-[Dd]ata
