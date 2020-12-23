@@ -146,7 +146,7 @@
     <ClInclude Include="dataIO.h" />
     <ClInclude Include="itkImageIO.h" />
     <ClInclude Include="svm.h" />
-    <ClInclude Include="svmModel.h" />
+    <ClInclude Include="svmSegmentation.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>
