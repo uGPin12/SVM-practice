@@ -3,7 +3,12 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+
+#include <boost/optional.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ini_parser.hpp>
+
 #include <Eigen/Core>
 #include <sys/stat.h>
 
@@ -52,7 +57,7 @@ void save_vector(const std::string path, std::vector<T> img,
 	bool UseCompression = false)
 {
 	unsigned int Dim = static_cast<unsigned int>(siz.size());
-	if (Dim != spacing.size()) {
+	if (Dim == spacing.size()) {
 		std::cerr << "Invalid input : 'spacing' or 'siz'.\n"
 			<< "Hit any key to exit..." << std::endl;
 		system("pause");
@@ -223,4 +228,27 @@ void save_param_as_csv(Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& eigen, 
 	ofs.close();
 
 	return;
+}
+
+template<class RET>
+RET read_param_boost(std::string path, std::string section, std::string key)
+{
+	/*
+	* @auther tanabe
+	* @history
+	* 2020/12/23
+	* iniファイルからモデルのパラメータを読み込む
+	*/
+	boost::property_tree::ptree pt;
+	boost::property_tree::read_ini(path, pt);
+
+	if (boost::optional<RET> ret = pt.get_optional<RET>(section + "." + key)) {
+		return ret.get();
+	}
+	else {
+		std::cout << key << " is nothing "
+			<< "\n Hit any key to exit..."
+			<< std::endl;
+	}
+
 }
