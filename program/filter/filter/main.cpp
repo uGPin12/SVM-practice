@@ -1,15 +1,3 @@
-#include "median.h"
-#include "dilation.h"
-#include "erosion.h"
-#include "opening.h"
-#include "closing.h"
-#include "sharpening_4N.h"
-#include "sharpening_8N.h"
-#include "convergence.h"
-#include "LoG.h"
-#include "identity.h"
-
-#include "util.h"
 #include "dataIO.h"
 #include "itkImageIO.h"
 
