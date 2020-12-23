@@ -3,7 +3,12 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+
+#include <boost/optional.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ini_parser.hpp>
+
 #include <Eigen/Core>
 #include <sys/stat.h>
 
@@ -11,9 +16,9 @@
 
 namespace fs = boost::filesystem;
 
-bool get_data_list(std::string list_path, std::list<std::string> &filename_list) {
+bool get_data_list(std::string list_path, std::list<std::string>& filename_list) {
 	/*
-	*  @list_path: input path to file that contained file list 
+	*  @list_path: input path to file that contained file list
 	*  @filename_list: data list that contained file list
 	*/
 	std::string filename_tmp;
@@ -43,25 +48,60 @@ bool make_dir(std::string dir_path) {
 	return true;
 }
 
+/*
+	2020.03.19 Last modified
+*/
 template<class T>
-void save_vector(const std::string path, std::vector<T> img, 
-					const int xsize, const int ysize, const int zsize, 
-					const double xspacing, const double yspacing, const double zspacing) 
+void save_vector(const std::string path, std::vector<T> img,
+	const std::vector<unsigned int> siz, const std::vector<double> spacing,
+	bool UseCompression = false)
 {
-	ImageIO<3> save_mhd;
-	save_mhd.SetIndex(0, 0);
-	save_mhd.SetIndex(1, 0);
-	save_mhd.SetIndex(2, 0);
-	save_mhd.SetSize(0, xsize);
-	save_mhd.SetSize(1, ysize);
-	save_mhd.SetSize(2, zsize);
-	save_mhd.SetOrigin(0, 0.);
-	save_mhd.SetOrigin(1, 0.);
-	save_mhd.SetOrigin(2, 0.);
-	save_mhd.SetSpacing(0, xspacing);
-	save_mhd.SetSpacing(1, yspacing);
-	save_mhd.SetSpacing(2, zspacing);
-	save_mhd.Write(img, path);
+	unsigned int Dim = static_cast<unsigned int>(siz.size());
+	if (Dim == spacing.size()) {
+		std::cerr << "Invalid input : 'spacing' or 'siz'.\n"
+			<< "Hit any key to exit..." << std::endl;
+		system("pause");
+		std::exit(EXIT_FAILURE);
+	}
+
+	if (Dim == 2) {
+		ImageIO<2> save_mhd;
+
+		save_mhd.SetIndex(0, 0);
+		save_mhd.SetIndex(1, 0);
+		save_mhd.SetSize(0, siz[0]);
+		save_mhd.SetSize(1, siz[1]);
+		save_mhd.SetOrigin(0, 0.);
+		save_mhd.SetOrigin(1, 0.);
+		save_mhd.SetSpacing(0, spacing[0]);
+		save_mhd.SetSpacing(1, spacing[1]);
+		save_mhd.Write(img, path, UseCompression);
+	}
+	else if (Dim == 3)
+	{
+		ImageIO<3> save_mhd;
+
+		save_mhd.SetIndex(0, 0);
+		save_mhd.SetIndex(1, 0);
+		save_mhd.SetIndex(2, 0);
+		save_mhd.SetSize(0, siz[0]);
+		save_mhd.SetSize(1, siz[1]);
+		save_mhd.SetSize(2, siz[2]);
+		save_mhd.SetOrigin(0, 0.);
+		save_mhd.SetOrigin(1, 0.);
+		save_mhd.SetOrigin(2, 0.);
+		save_mhd.SetSpacing(0, spacing[0]);
+		save_mhd.SetSpacing(1, spacing[1]);
+		save_mhd.SetSpacing(2, spacing[2]);
+		save_mhd.Write(img, path, UseCompression);
+	}
+	else
+	{
+		std::cerr << "Not defined for the specified dimension.\n"
+			<< "Hit any key to exit..." << std::endl;
+		system("pause");
+		std::exit(EXIT_FAILURE);
+	}
 	return;
 }
 
@@ -72,7 +112,7 @@ long long get_file_size(const std::string filename)
 	filename : ファイル名
 	*/
 
-	FILE *fp;
+	FILE* fp;
 	struct _stat64 st;
 	if (fopen_s(&fp, filename.c_str(), "rb") != 0) {
 		std::cerr << "Cannot open file: " << filename << std::endl;
@@ -84,7 +124,7 @@ long long get_file_size(const std::string filename)
 }
 
 template< class T >
-void read_vector(std::vector<T> &v, const std::string filename)
+void read_vector(std::vector<T>& v, const std::string filename)
 {
 	/*
 	raw画像を読み込んでvectorに格納
@@ -92,7 +132,7 @@ void read_vector(std::vector<T> &v, const std::string filename)
 	filename : ファイル名
 	*/
 	auto num = get_file_size(filename) / sizeof(T);
-	FILE *fp;
+	FILE* fp;
 	if (fopen_s(&fp, filename.c_str(), "rb") != 0) {
 		std::cerr << "Cannot open file: " << filename << std::endl;
 		std::abort();
@@ -100,20 +140,18 @@ void read_vector(std::vector<T> &v, const std::string filename)
 	v.resize(num);
 	fread(v.data(), sizeof(T), num, fp);
 
-	std::cout << "read:  " << filename << std::endl;
-
 	fclose(fp);
 }
 
 template< class T >
-void write_vector(std::vector<T> &v, const std::string filename)
+void write_vector(std::vector<T>& v, const std::string filename)
 {
 	/*
 	vectorをraw画像に書き込み
 	v : 格納するベクター
 	filename : 保存場所絶対パス
 	*/
-	FILE *fp;
+	FILE* fp;
 	if (fopen_s(&fp, filename.c_str(), "wb") != 0) {
 		std::cerr << "Cannot open file: " << filename << std::endl;
 		std::abort();
@@ -123,7 +161,7 @@ void write_vector(std::vector<T> &v, const std::string filename)
 }
 
 template<typename T>
-void write_raw_and_txt(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &data, std::string filename)
+void write_raw_and_txt(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& data, std::string filename)
 {
 	/*
 	eigenのmatrixをraw画像として保存
@@ -144,7 +182,7 @@ void write_raw_and_txt(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &d
 	Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> Data;
 	Data = data;
 	std::vector<T> save_data(rows * cols);
-	Data.resize(data.rows()*data.cols(), 1);
+	Data.resize(data.rows() * data.cols(), 1);
 	for (size_t i = 0; i < save_data.size(); i++)
 	{
 		save_data[i] = Data(i, 0);
@@ -167,7 +205,7 @@ void read_raw_to_eigen(Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& eigen, 
 	*/
 	std::vector<T> v;
 	auto num = get_file_size(filename) / sizeof(T);
-	FILE *fp;
+	FILE* fp;
 	if (fopen_s(&fp, filename.c_str(), "rb") != 0) {
 		std::cerr << "Cannot open file: " << filename << std::endl;
 		std::abort();
@@ -183,11 +221,34 @@ void read_raw_to_eigen(Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& eigen, 
 }
 
 template <class T>
-void save_param_as_csv(Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &eigen, std::string filename) {
-	
+void save_param_as_csv(Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& eigen, std::string filename) {
+
 	std::ofstream ofs(filename);
 	ofs << eigen;
 	ofs.close();
-	
+
 	return;
+}
+
+template<class RET>
+RET read_param_boost(std::string path, std::string section, std::string key)
+{
+	/*
+	* @auther tanabe
+	* @history
+	* 2020/12/23
+	* iniファイルからモデルのパラメータを読み込む
+	*/
+	boost::property_tree::ptree pt;
+	boost::property_tree::read_ini(path, pt);
+
+	if (boost::optional<RET> ret = pt.get_optional<RET>(section + "." + key)) {
+		return ret.get();
+	}
+	else {
+		std::cout << key << " is nothing "
+			<< "\n Hit any key to exit..."
+			<< std::endl;
+	}
+
 }
