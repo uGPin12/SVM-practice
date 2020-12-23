@@ -36,7 +36,7 @@ class ImageIO{
 public:
 
   ImageIO(){}
-  ImageIO(const std::string &inputFilename)
+  ImageIO(const std::string& inputFilename)
   {
     Refer(inputFilename);
   }
@@ -55,7 +55,7 @@ public:
 
   unsigned int NumOfPixels(){ return numOfPixels; }
 
-  void Refer(const std::string &referenceFilename)
+  void Refer(const std::string& referenceFilename)
   {
     itk::ImageIOBase::Pointer imageIO = itk::ImageIOFactory::
       CreateImageIO(referenceFilename.c_str(), itk::ImageIOFactory::ReadMode);
@@ -75,7 +75,7 @@ public:
   }
 
   template<class PixelType>
-  void Read(std::vector<PixelType> &Image, const std::string &inputFilename)
+  void Read(std::vector<PixelType>& Image, const std::string& inputFilename)
   {
     using ImageType = itk::Image<PixelType, Dim>;
     using ReaderType = itk::ImageFileReader<ImageType>;
@@ -86,11 +86,12 @@ public:
     reader->GraftOutput(ptr2img(Image.data()));
     try {
       reader->Update();
-      std::cout << "read:  " << inputFilename << std::endl;
+      std::cout << "Read:  " << inputFilename << std::endl;
     }
-    catch (itk::ExceptionObject e)
+    catch (itk::ExceptionObject err)
     {
-      std::cout << e << std::endl;
+        std::cout << "Exception caught! :" << std::endl
+            << err << std::endl;
     }
   }
 
@@ -105,29 +106,30 @@ public:
     writer->SetUseCompression(UseCompression);
     try {
       writer->Update();
-      std::cout << "write: " << outputFilename << std::endl;
+      std::cout << "Write: " << outputFilename << std::endl;
     }
-    catch (itk::ExceptionObject e)
+    catch (itk::ExceptionObject err)
     {
-      std::cout << e << std::endl;
+        std::cout << "Exception caught! :" << std::endl 
+            << err << std::endl;
     }
   }
 
   template<class PixelType>
-  typename itk::Image<PixelType, Dim>::Pointer ConvertVector2Itk(std::vector<PixelType> &Image)
+  typename itk::Image<PixelType, Dim>::Pointer ConvertVector2Itk(std::vector<PixelType>& Image)
   {
 	  return ptr2img(Image.data());
   }
 
   template<class PixelType>
-  void ConvertItk2Vector(typename itk::Image<PixelType, Dim>::Pointer ptr, std::vector<PixelType> &Image)
+  void ConvertItk2Vector(typename itk::Image<PixelType, Dim>::Pointer ptr, std::vector<PixelType>& Image)
   {
 	  using ImageType = itk::Image<PixelType, Dim>;
 	  Image.resize(numOfPixels);
 	  itk::ImageRegionIterator<ImageType> itr(ptr, ptr->GetLargestPossibleRegion());
 	  size_t i = 0;
-	  for(auto it = itr.Begin(); it != itr.End(); ++it){
-		  Image.at(i++) = it.Get();
+      for (itr.GoToBegin(); !itr.IsAtEnd(); ++itr) {
+		  Image.at(i++) = itr.Get();
 	  }
   }
 
