@@ -1,6 +1,7 @@
 #include "dataIO.h"
 #include "itkImageIO.h"
 
+#include "svm.h"
 #include "util.h"
 #include "common.h"
 
