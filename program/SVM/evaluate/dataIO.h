@@ -52,14 +52,15 @@ bool make_dir(std::string dir_path) {
 	2020.03.19 Last modified
 */
 template<class T>
-void save_vector(const std::string path, std::vector<T> img,
+void save_vector(
+	const std::string path, std::vector<T> img,
 	const std::vector<unsigned int> siz, const std::vector<double> spacing,
-	bool UseCompression = false)
+	bool UseCompression = false
+)
 {
 	unsigned int Dim = static_cast<unsigned int>(siz.size());
 	if (Dim == spacing.size()) {
-		std::cerr << "Invalid input : 'spacing' or 'siz'.\n"
-			<< "Hit any key to exit..." << std::endl;
+		std::cerr << "Invalid input : 'spacing' or 'siz'." << std::endl;
 		system("pause");
 		std::exit(EXIT_FAILURE);
 	}

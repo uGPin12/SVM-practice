@@ -36,26 +36,6 @@ void mkdir_boost(std::string dir)
 	}
 }
 
-// boostを用いたパラメータ読み込み
-template<class RET>
-RET read_param_boost(std::string path, std::string section, std::string key)
-{
-	boost::property_tree::ptree pt;
-	boost::property_tree::read_ini(path, pt);
-
-	if (boost::optional<RET> ret = pt.get_optional<RET>(section + "." + key)) {
-		return ret.get();
-	}
-	else {
-		std::cerr << key << " is nothing "
-			<< "\n Hit any key to exit..."
-			<< std::endl;
-		std::exit(EXIT_FAILURE);
-		system("pause");
-	}
-
-}
-
 template<class DataType>
 void read_list(std::vector<DataType>& list,std::string filepath)
 {

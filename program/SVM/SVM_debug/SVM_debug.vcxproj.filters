@@ -17,14 +17,14 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Filter Include="ヘッダーファイル">
       <UniqueIdentifier>{eb262451-ace7-4182-8011-14c2e15df20e}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソースファイル">
       <UniqueIdentifier>{1f51f121-589d-4e70-b3a2-8ccb8294873f}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

@@ -9,9 +9,10 @@
 int main(int argc, char* argv[]) {
 
 	if (argc != 2) {
-		std::cout << "Usage: " << argv[0]
-			<< "evaluate.ini\n"
-			<< "Hit any key to exit..." << std::endl;
+		std::cout 
+			<< "Usage: "
+			<< argv[0] << "evaluate.ini" 
+			<< std::endl;
 		system("pause");
 		return EXIT_FAILURE;
 	}
@@ -105,5 +106,5 @@ int main(int argc, char* argv[]) {
 
 	std::cout << "\n------Evaluation complete------" << std::endl;
 	system("pause");
-	return 0;
+	return EXIT_SUCCESS;
 }

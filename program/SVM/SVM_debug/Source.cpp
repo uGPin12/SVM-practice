@@ -75,5 +75,5 @@ int main(int argc, char* argv[]) {
 	delete[] prob.y;
 
 	system("pause");
-	return 0;
+	return EXIT_SUCCESS;
 }

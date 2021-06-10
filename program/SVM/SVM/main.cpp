@@ -8,9 +8,10 @@
 int main(int argc, char* argv[]) {
 
 	if (argc != 2) {
-		std::cout << "Usage: " << argv[0]
-			<< "input_info.ini\n"
-			<< "Hit any key to exit..." << std::endl;
+		std::cout
+			<< "Usage: "
+			<< argv[0] << "input_info.ini"
+			<< std::endl;
 		system("pause");
 		return EXIT_FAILURE;
 	}
@@ -27,8 +28,7 @@ int main(int argc, char* argv[]) {
 	}
 	else
 	{
-		std::cerr << "This code supports only LOOCV now.\n"
-			<< "Hit any key to exit..." << std::endl;
+		std::cerr << "This code supports only LOOCV now." << std::endl;
 		system("pause");
 		return EXIT_FAILURE;
 	}
@@ -164,6 +164,5 @@ int main(int argc, char* argv[]) {
 	}
 
 	system("pause");
-	return 0;
-
+	return EXIT_SUCCESS;
 }
