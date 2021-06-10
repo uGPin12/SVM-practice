@@ -5,7 +5,8 @@
 #include <string>
 #include <iostream>
 
-using PixelType	= short;
+using InputType	= short;
+using OutputType = double;
 using LabelType	= unsigned char;
 
 template<unsigned int Dim>
@@ -20,6 +21,6 @@ public:
 	~filterInput() {};
 
 	ImageIO<Dim> metadata;
-	std::vector<PixelType> input;
+	std::vector<InputType> input;
 	std::vector<LabelType> mask;
 };

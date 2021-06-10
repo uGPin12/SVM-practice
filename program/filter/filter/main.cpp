@@ -1,5 +1,19 @@
+#include "util.h"
 #include "dataIO.h"
 #include "itkImageIO.h"
+#include "common.h"
+
+#include "../header/closing.h"
+#include "../header/convergence.h"
+#include "../header/dilation.h"
+#include "../header/erosion.h"
+#include "../header/LoG.h"
+#include "../header/median.h"
+#include "../header/opening.h"
+#include "../header/sharpening_4N.h"
+#include "../header/sharpening_8N.h"
+#include "../header/sobel.h"
+#include "../header/identity.h"
 
 int main(int argc, char* argv[])
 {
@@ -20,10 +34,10 @@ int main(int argc, char* argv[])
 	std::vector<std::string> case_names;
 	read_name_list(case_names, dir_name + "case_names.txt");
 
-	std::vector<std::vector<output_type>> imgO;
+	std::vector<std::vector<OutputType>> imgO;
 	std::vector<std::string> feat_names;
-	std::vector<input_type> imgI;
-	std::vector<mask_type> mask;
+	std::vector<InputType> imgI;
+	std::vector<LabelType> mask;
 	ImageIO<2> mhdI;
 	ImageIO<2> mhdM;
 
@@ -37,7 +51,7 @@ int main(int argc, char* argv[])
 		mhdM.Read(mask, dir_mask + case_names[i_case]);
 		std::vector<unsigned int> siz = { mhdI.Size(0), mhdI.Size(1) };
 
-		std::vector<output_type> buf(imgI.size());
+		std::vector<OutputType> buf(imgI.size());
 		identity(buf, imgI, siz);
 		imgO.push_back(buf);
 		feat_names.push_back("org/");

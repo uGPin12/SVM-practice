@@ -229,26 +229,3 @@ void save_param_as_csv(Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& eigen, 
 
 	return;
 }
-
-template<class RET>
-RET read_param_boost(std::string path, std::string section, std::string key)
-{
-	/*
-	* @auther tanabe
-	* @history
-	* 2020/12/23
-	* iniファイルからモデルのパラメータを読み込む
-	*/
-	boost::property_tree::ptree pt;
-	boost::property_tree::read_ini(path, pt);
-
-	if (boost::optional<RET> ret = pt.get_optional<RET>(section + "." + key)) {
-		return ret.get();
-	}
-	else {
-		std::cout << key << " is nothing "
-			<< "\n Hit any key to exit..."
-			<< std::endl;
-	}
-
-}
